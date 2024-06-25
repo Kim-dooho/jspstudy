@@ -13,7 +13,7 @@ import com.min.app.dto.BoardDTO;
 
 public class BoardDAOImpl implements BoardDAO {
 
-    // MyFramework 사용 시 객체 선언(connection/preparedStatement
+    // MyFramework 사용 시 객체 선언 (Connection/PreparedStatement/ResultSet 대신 활용)
     private SqlSessionFactory factory;
     
     // Singleton Pattern
@@ -32,23 +32,29 @@ public class BoardDAOImpl implements BoardDAO {
       return boardDAO;
     }
 
-  
+    private final String NS = "com.min.app.dao.BoardMapper.";
+    
   @Override
   public int getBoardCount() {
-    // TODO Auto-generated method stub
-    return 0;
+    SqlSession ss = factory.openSession();
+    int count = ss.selectOne(NS + "getBoardCount"); // 메소드의 이름이 id 와 일치함
+    ss.close();
+    return count;
   }
 
   @Override
   public List<BoardDTO> getBoardList(Map<String, Object> params) {
-    // TODO Auto-generated method stub
-    return null;
+    // params 에는 begin1, end 20, sort DESC 등의 값이 들어감
+    SqlSession ss = factory.openSession();
+    List<BoardDTO> boardList = ss.selectList(NS + "getBoardList", params);
+    ss.close();
+    return boardList;
   }
 
   @Override
   public BoardDTO getBoardByNo(int boardNo) {
     SqlSession ss = factory.openSession();
-    BoardDTO board = ss.selectOne("com.min.app.dao.BoardMapper.");
+    BoardDTO board = ss.selectOne(NS + "getBoardByNo", boardNo); // 앞에꺼는 호출, 뒤는 보내기
     ss.close();
     return board;
   }
